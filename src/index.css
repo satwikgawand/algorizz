@@ -113,12 +113,15 @@
   input[type='range'] {
     -webkit-appearance: none;
     appearance: none;
-    background: transparent;
+    background: #333333;
     cursor: pointer;
+    height: 4px;
+    border-radius: 2px;
+    outline: none;
   }
 
   input[type='range']::-webkit-slider-track {
-    background: #333333;
+    background: transparent;
     height: 4px;
     border-radius: 2px;
   }
@@ -132,10 +135,11 @@
     background: #00ff41;
     margin-top: -5px;
     box-shadow: 0 0 6px #00ff41;
+    cursor: pointer;
   }
 
   input[type='range']::-moz-range-track {
-    background: #333333;
+    background: transparent;
     height: 4px;
     border-radius: 2px;
   }
@@ -147,5 +151,11 @@
     background: #00ff41;
     border: none;
     box-shadow: 0 0 6px #00ff41;
+  }
+
+  input[type='range']::-moz-range-progress {
+    background: #00ff41;
+    height: 4px;
+    border-radius: 2px;
   }
 }

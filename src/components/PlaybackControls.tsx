@@ -19,6 +19,7 @@ export default function PlaybackControls() {
 
   const totalSteps = steps.length
   const progress = totalSteps > 1 ? (currentStep / (totalSteps - 1)) * 100 : 0
+  const sliderFill = ((arraySize - 5) / (50 - 5)) * 100
 
   const speedOptions = [
     { label: 'slow', value: 800 },
@@ -106,6 +107,9 @@ export default function PlaybackControls() {
             value={arraySize}
             onChange={(e) => setArraySize(Number(e.target.value))}
             className="w-full"
+            style={{
+              background: `linear-gradient(to right, #00ff41 ${sliderFill}%, #333333 ${sliderFill}%)`,
+            }}
           />
           <div className="flex justify-between text-white/20 text-xs">
             <span>5</span>
