@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import type { Algorithm } from '../types'
+import ComplexityModal from './ComplexityModal'
 
 interface InfoPanelProps {
   algorithm: Algorithm
@@ -59,6 +61,7 @@ function highlightPseudocode(code: string): string {
 
 export default function InfoPanel({ algorithm }: InfoPanelProps) {
   const highlighted = highlightPseudocode(algorithm.pseudocode)
+  const [activeComplexity, setActiveComplexity] = useState<string | null>(null)
 
   return (
     <div className="flex flex-col gap-4 h-full">
@@ -87,7 +90,10 @@ export default function InfoPanel({ algorithm }: InfoPanelProps) {
               <tr className="border-b border-border/50">
                 <td className="text-white/40 py-2 pr-4">best</td>
                 <td className="py-2">
-                  <span className={getComplexityClass(algorithm.complexity.best)}>
+                  <span
+                    className={`${getComplexityClass(algorithm.complexity.best)} cursor-pointer hover:opacity-75 transition-opacity`}
+                    onClick={() => setActiveComplexity(algorithm.complexity.best)}
+                  >
                     {algorithm.complexity.best}
                   </span>
                 </td>
@@ -95,7 +101,10 @@ export default function InfoPanel({ algorithm }: InfoPanelProps) {
               <tr className="border-b border-border/50">
                 <td className="text-white/40 py-2 pr-4">average</td>
                 <td className="py-2">
-                  <span className={getComplexityClass(algorithm.complexity.average)}>
+                  <span
+                    className={`${getComplexityClass(algorithm.complexity.average)} cursor-pointer hover:opacity-75 transition-opacity`}
+                    onClick={() => setActiveComplexity(algorithm.complexity.average)}
+                  >
                     {algorithm.complexity.average}
                   </span>
                 </td>
@@ -103,7 +112,10 @@ export default function InfoPanel({ algorithm }: InfoPanelProps) {
               <tr className="border-b border-border/50">
                 <td className="text-white/40 py-2 pr-4">worst</td>
                 <td className="py-2">
-                  <span className={getComplexityClass(algorithm.complexity.worst)}>
+                  <span
+                    className={`${getComplexityClass(algorithm.complexity.worst)} cursor-pointer hover:opacity-75 transition-opacity`}
+                    onClick={() => setActiveComplexity(algorithm.complexity.worst)}
+                  >
                     {algorithm.complexity.worst}
                   </span>
                 </td>
@@ -111,7 +123,10 @@ export default function InfoPanel({ algorithm }: InfoPanelProps) {
               <tr>
                 <td className="text-white/40 py-2 pr-4">space</td>
                 <td className="py-2">
-                  <span className={getComplexityClass(algorithm.complexity.space)}>
+                  <span
+                    className={`${getComplexityClass(algorithm.complexity.space)} cursor-pointer hover:opacity-75 transition-opacity`}
+                    onClick={() => setActiveComplexity(algorithm.complexity.space)}
+                  >
                     {algorithm.complexity.space}
                   </span>
                 </td>
@@ -145,6 +160,12 @@ export default function InfoPanel({ algorithm }: InfoPanelProps) {
           />
         </div>
       </div>
+      {activeComplexity && (
+        <ComplexityModal
+          complexity={activeComplexity}
+          onClose={() => setActiveComplexity(null)}
+        />
+      )}
     </div>
   )
 }
