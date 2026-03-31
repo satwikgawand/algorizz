@@ -4,21 +4,35 @@ import { algorithms } from '../data/algorithms'
 import { useVisualizerStore } from '../store/visualizerStore'
 import InfoPanel from '../components/InfoPanel'
 import VisualizerCanvas from '../components/VisualizerCanvas'
+import GraphCanvas from '../components/GraphCanvas'
+import GridCanvas from '../components/GridCanvas'
+import StringCanvas from '../components/StringCanvas'
 import PlaybackControls from '../components/PlaybackControls'
 import CommentaryPanel from '../components/CommentaryPanel'
 import ComplexityGraph from '../components/ComplexityGraph'
 
 type MobileTab = 'info' | 'commentary'
 
+const ARRAY_CATEGORIES = new Set(['sorting', 'searching'])
+const COMPLEXITY_GRAPH_CATEGORIES = new Set(['sorting', 'searching'])
+
 function getComplexityType(id: string): 'n2' | 'nlogn' {
-  if (id === 'bubble-sort') return 'n2'
-  return 'nlogn'
+  return id === 'bubble-sort' || id === 'selection-sort' || id === 'insertion-sort'
+    ? 'n2'
+    : 'nlogn'
 }
 
 export default function Visualizer() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { steps, currentStep, arraySize, setAlgorithm, play } = useVisualizerStore()
+  const {
+    steps,
+    currentStep,
+    arraySize,
+    stringInput,
+    setAlgorithm,
+    play,
+  } = useVisualizerStore()
   const [mobileTab, setMobileTab] = useState<MobileTab>('info')
 
   const algorithm = algorithms.find((a) => a.id === id)
@@ -31,7 +45,6 @@ export default function Visualizer() {
     setAlgorithm(algorithm.id)
   }, [algorithm?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Auto-play after algorithm is set
   useEffect(() => {
     if (steps.length > 0) {
       const timer = setTimeout(() => {
@@ -49,7 +62,35 @@ export default function Visualizer() {
     )
   }
 
+  const showArraySize = ARRAY_CATEGORIES.has(algorithm.category)
+  const showComplexityGraph = COMPLEXITY_GRAPH_CATEGORIES.has(algorithm.category)
   const complexityType = getComplexityType(algorithm.id)
+
+  function renderCanvas() {
+    switch (algorithm!.category) {
+      case 'graph':
+        return <GraphCanvas steps={steps} currentStep={currentStep} />
+      case 'pathfinding':
+        return <GridCanvas steps={steps} currentStep={currentStep} />
+      case 'string-matching':
+        return (
+          <StringCanvas
+            steps={steps}
+            currentStep={currentStep}
+            text={stringInput?.text ?? ''}
+            pattern={stringInput?.pattern ?? ''}
+          />
+        )
+      default:
+        return (
+          <VisualizerCanvas
+            steps={steps}
+            currentStep={currentStep}
+            arraySize={arraySize}
+          />
+        )
+    }
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
@@ -75,25 +116,19 @@ export default function Visualizer() {
 
         {/* Center: Visualization */}
         <div className="flex flex-col gap-4">
-          {/* Canvas */}
           <div className="panel overflow-hidden">
             <div className="panel-header">
               <span className="text-primary/60">▐</span>
               <span>visualization</span>
-              <span className="ml-auto text-white/20 text-xs">
-                n={arraySize}
-              </span>
+              {showArraySize && (
+                <span className="ml-auto text-white/20 text-xs">n={arraySize}</span>
+              )}
             </div>
             <div className="p-3">
-              <VisualizerCanvas
-                steps={steps}
-                currentStep={currentStep}
-                arraySize={arraySize}
-              />
+              {renderCanvas()}
             </div>
           </div>
 
-          {/* Playback controls */}
           <div className="panel overflow-hidden">
             <div className="panel-header">
               <span className="text-accent/60">⏯</span>
@@ -104,12 +139,13 @@ export default function Visualizer() {
             </div>
           </div>
 
-          {/* Complexity graph */}
-          <ComplexityGraph
-            complexityType={complexityType}
-            currentN={arraySize}
-            maxN={50}
-          />
+          {showComplexityGraph && (
+            <ComplexityGraph
+              complexityType={complexityType}
+              currentN={arraySize}
+              maxN={50}
+            />
+          )}
         </div>
 
         {/* Right: Commentary */}
@@ -120,23 +156,19 @@ export default function Visualizer() {
 
       {/* MOBILE: Single column */}
       <div className="lg:hidden flex flex-col gap-4">
-        {/* Canvas always on top */}
         <div className="panel overflow-hidden">
           <div className="panel-header">
             <span className="text-primary/60">▐</span>
             <span>visualization</span>
-            <span className="ml-auto text-white/20 text-xs">n={arraySize}</span>
+            {showArraySize && (
+              <span className="ml-auto text-white/20 text-xs">n={arraySize}</span>
+            )}
           </div>
           <div className="p-3">
-            <VisualizerCanvas
-              steps={steps}
-              currentStep={currentStep}
-              arraySize={arraySize}
-            />
+            {renderCanvas()}
           </div>
         </div>
 
-        {/* Playback */}
         <div className="panel overflow-hidden">
           <div className="panel-header">
             <span className="text-accent/60">⏯</span>
@@ -147,7 +179,6 @@ export default function Visualizer() {
           </div>
         </div>
 
-        {/* Tab switcher */}
         <div className="flex gap-1 p-1 bg-surface rounded-lg border border-border">
           {(['info', 'commentary'] as MobileTab[]).map((tab) => (
             <button
@@ -164,16 +195,17 @@ export default function Visualizer() {
           ))}
         </div>
 
-        {/* Tabbed content */}
         {mobileTab === 'info' && <InfoPanel algorithm={algorithm} />}
         {mobileTab === 'commentary' && (
           <>
             <CommentaryPanel algorithm={algorithm} steps={steps} />
-            <ComplexityGraph
-              complexityType={complexityType}
-              currentN={arraySize}
-              maxN={50}
-            />
+            {showComplexityGraph && (
+              <ComplexityGraph
+                complexityType={complexityType}
+                currentN={arraySize}
+                maxN={50}
+              />
+            )}
           </>
         )}
       </div>

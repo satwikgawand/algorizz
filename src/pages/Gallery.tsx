@@ -31,7 +31,7 @@ export default function Gallery() {
           </span>
           <span>·</span>
           <span>
-            <span className="text-secondary/50">1</span> category
+            <span className="text-secondary/50">{new Set(algorithms.map((a) => a.category)).size}</span> categories
           </span>
           <span>·</span>
           <span>
