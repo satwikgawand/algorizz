@@ -19,9 +19,6 @@ export default function AlgorithmCard({ algorithm }: AlgorithmCardProps) {
       className="panel group hover:border-primary/50 transition-all duration-200 cursor-pointer overflow-hidden flex flex-col"
       onClick={() => navigate(`/algorithm/${algorithm.id}`)}
     >
-      {/* Card top bar */}
-      <div className="h-1 bg-gradient-to-r from-primary/30 via-secondary/30 to-transparent group-hover:from-primary/60 group-hover:via-secondary/60 transition-all duration-300" />
-
       <div className="p-5 flex flex-col gap-4 flex-1">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
